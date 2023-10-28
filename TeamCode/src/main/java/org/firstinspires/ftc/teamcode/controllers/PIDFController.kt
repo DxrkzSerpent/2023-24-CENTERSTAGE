@@ -3,81 +3,66 @@ package org.firstinspires.ftc.teamcode.controllers
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.withSign
+import kotlin.math.sign
 
 /**
  * PID controller with various feedforward components.
  */
 class PIDFController
 /**
- * Feedforward parameters `kV`, `kA`, and `kStatic` correspond with a basic
- * kinematic model of DC motors. The general function `kF` computes a custom feedforward
- * term for other plants.
+ * Constructor for [PIDFController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
+ * control (the most common kind of feedforward in FTC). [kF] provides a custom feedforward term for other plants.
  *
  * @param pid traditional PID coefficients
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic additive feedforward constant
- * @param kF custom feedforward that depends on position and velocity
- */ @JvmOverloads constructor(
-        private val pid: PIDCoefficients,
-        private val kV: Double = 0.0,
-        private val kA: Double = 0.0,
-        private val kStatic: Double = 0.0,
-        private val kF: FeedforwardFun = object : FeedforwardFun {
-            override fun compute(position: Double, velocity: Double?): Double {
-                return 0.0
-            }
-        }
+ * @param kF custom feedforward that depends on position and/or velocity (e.g., a gravity term for arms)
+ * @param clock clock
+ */
+@JvmOverloads constructor(
+    private val pid: PIDCoefficients,
+    private val kV: Double = 0.0,
+    private val kA: Double = 0.0,
+    private val kStatic: Double = 0.0,
+    private val kF: (Double, Double?) -> Double = { _, _ -> 0.0 },
+    private val clock: NanoClock = NanoClock.system()
 ) {
-    class PIDCoefficients {
-        var kP = 0.0
-        var kI = 0.0
-        var kD = 0.0
-    }
+    private var errorSum: Double = 0.0
+    private var lastUpdateTimestamp: Double = Double.NaN
 
-    interface FeedforwardFun {
-        fun compute(position: Double, velocity: Double?): Double
-    }
+    private var inputBounded: Boolean = false
+    private var minInput: Double = 0.0
+    private var maxInput: Double = 0.0
 
-    private var errorSum = 0.0
-    private var lastUpdateTs: Long = 0
-    private var inputBounded = false
-    private var minInput = 0.0
-    private var maxInput = 0.0
-    private var outputBounded = false
-    private var minOutput = 0.0
-    private var maxOutput = 0.0
+    private var outputBounded: Boolean = false
+    private var minOutput: Double = 0.0
+    private var maxOutput: Double = 0.0
 
     /**
      * Target position (that is, the controller setpoint).
      */
-    private var targetPosition = 0.0
+    var targetPosition: Double = 0.0
 
     /**
      * Target velocity.
      */
-    private var targetVelocity = 0.0
+    var targetVelocity: Double = 0.0
 
     /**
      * Target acceleration.
      */
-    private var targetAcceleration = 0.0
+    var targetAcceleration: Double = 0.0
 
     /**
-     * Error computed in the last call to [.update]
+     * Error computed in the last call to [update].
      */
-    private var lastError = 0.0
-
-    constructor(
-            pid: PIDCoefficients,
-            kF: FeedforwardFun
-    ) : this(pid, 0.0, 0.0, 0.0, kF)
+    var lastError: Double = 0.0
+        private set
 
     /**
-     * Sets bound on the input of the controller. When computing the error, the min and max are
-     * treated as the same value. (Imagine taking the segment of the real line between min and max
-     * and attaching the endpoints.)
+     * Sets bound on the input of the controller. The min and max values are considered modularly-equivalent (that is,
+     * the input wraps around).
      *
      * @param min minimum input
      * @param max maximum input
@@ -109,7 +94,7 @@ class PIDFController
         if (inputBounded) {
             val inputRange = maxInput - minInput
             while (abs(error) > inputRange / 2.0) {
-                error -= inputRange.withSign(error)
+                error -= sign(error) * inputRange
             }
         }
         return error
@@ -118,47 +103,41 @@ class PIDFController
     /**
      * Run a single iteration of the controller.
      *
-     * @param timestamp measurement timestamp as given by [System.nanoTime]
      * @param measuredPosition measured position (feedback)
      * @param measuredVelocity measured velocity
      */
     @JvmOverloads
     fun update(
-            timestamp: Long,
-            measuredPosition: Double,
-            measuredVelocity: Double? = null
+        measuredPosition: Double,
+        measuredVelocity: Double? = null
     ): Double {
+        val currentTimestamp = clock.seconds()
         val error = getPositionError(measuredPosition)
-        if (lastUpdateTs == 0L) {
+        return if (lastUpdateTimestamp.isNaN()) {
             lastError = error
-            lastUpdateTs = timestamp
-            return 0.0
-        }
-        val dt = (timestamp - lastUpdateTs).toDouble()
-        errorSum += 0.5 * (error + lastError) * dt
-        val errorDeriv = (error - lastError) / dt
-        lastError = error
-        lastUpdateTs = timestamp
-        val velError: Double = if (measuredVelocity == null) {
-            errorDeriv
+            lastUpdateTimestamp = currentTimestamp
+            0.0
         } else {
-            targetVelocity - measuredVelocity
-        }
-        val baseOutput = pid.kP * error + pid.kI * errorSum + pid.kD * velError + kV * targetVelocity + kA * targetAcceleration +
-                kF.compute(measuredPosition, measuredVelocity)
-        var output = 0.0
-        if (abs(baseOutput) > 1e-6) {
-            output = baseOutput + kStatic.withSign(baseOutput)
-        }
-        return if (outputBounded) {
-            max(minOutput, min(output, maxOutput))
-        } else output
-    }
+            val dt = currentTimestamp - lastUpdateTimestamp
+            errorSum += 0.5 * (error + lastError) * dt
+            val errorDeriv = (error - lastError) / dt
 
-    fun update(
-            measuredPosition: Double
-    ): Double {
-        return update(System.nanoTime(), measuredPosition, null)
+            lastError = error
+            lastUpdateTimestamp = currentTimestamp
+
+            // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
+            // determination of the sign of kStatic
+            val baseOutput = pid.kP * error + pid.kI * errorSum +
+                    pid.kD * (measuredVelocity?.let { targetVelocity - it } ?: errorDeriv) +
+                    kV * targetVelocity + kA * targetAcceleration + kF(measuredPosition, measuredVelocity)
+            val output = if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
+
+            if (outputBounded) {
+                max(minOutput, min(output, maxOutput))
+            } else {
+                output
+            }
+        }
     }
 
     /**
@@ -167,6 +146,6 @@ class PIDFController
     fun reset() {
         errorSum = 0.0
         lastError = 0.0
-        lastUpdateTs = 0
+        lastUpdateTimestamp = Double.NaN
     }
 }
