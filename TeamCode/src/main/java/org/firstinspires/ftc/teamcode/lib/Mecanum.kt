@@ -10,7 +10,7 @@ class Mecanum(hardwareMap: HardwareMap) {
     private val frMotor: DcMotorEx
     private val blMotor: DcMotorEx
     private val brMotor: DcMotorEx
-    private var slowmodeToggle = false
+    private var slowmodeToggle = true
     private var s: Double = 1.0
     private var y: Float = 0.0F
     private var x: Float = 0.0F
@@ -23,6 +23,8 @@ class Mecanum(hardwareMap: HardwareMap) {
         brMotor = hardwareMap.get(DcMotorEx::class.java, "brMotor")
         frMotor.direction = DcMotorSimple.Direction.REVERSE
         brMotor.direction = DcMotorSimple.Direction.REVERSE
+        flMotor.direction = DcMotorSimple.Direction.REVERSE
+        blMotor.direction = DcMotorSimple.Direction.REVERSE
     }
 
     fun telemetry(telemetry: Telemetry, gamepad: Gamepad) {

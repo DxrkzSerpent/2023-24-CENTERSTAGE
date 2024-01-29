@@ -53,7 +53,7 @@ import java.util.List;
 public final class TankDrive {
     public static class Params {
         // drive model parameters
-        public double inPerTick = 0;
+        public double inPerTick = 1734.0;
         public double trackWidthTicks = 0;
 
         // feedforward parameters (in tick units)
