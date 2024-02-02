@@ -10,7 +10,6 @@ class Mecanum(hardwareMap: HardwareMap) {
     private val frMotor: DcMotorEx
     private val blMotor: DcMotorEx
     private val brMotor: DcMotorEx
-    private var slowmodeToggle = false
     private var s: Double = 1.0
     private var y: Float = 0.0F
     private var x: Float = 0.0F
@@ -38,7 +37,7 @@ class Mecanum(hardwareMap: HardwareMap) {
         frMotor.power = (y - x - turn) * s
         brMotor.power = (y + x - turn) * s
         y = -gamepad1.left_stick_y
-        x = gamepad1.left_stick_x
+        x = (gamepad1.left_stick_x * 1.1).toFloat()
         turn = -gamepad1.right_stick_x
     }
 }
