@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.Telemetry
 class ControllableMecanum(hardwareMap: HardwareMap) {
-    private val flMotor: DcMotorEx
-    private val frMotor: DcMotorEx
-    private val blMotor: DcMotorEx
-    private val brMotor: DcMotorEx
+    val flMotor: DcMotorEx
+    val frMotor: DcMotorEx
+    val blMotor: DcMotorEx
+    val brMotor: DcMotorEx
     var s: Double = 1.0
     var y: Float = 0.0F
     var x: Float = 0.0F
@@ -38,5 +38,9 @@ class ControllableMecanum(hardwareMap: HardwareMap) {
         blMotor.power = (y - x + turn) * s
         frMotor.power = (y - x - turn) * s
         brMotor.power = (y + x - turn) * s
+    }
+
+    fun setPos0() {
+        flMotor.controller.setMotorTargetPosition(flMotor.portNumber, 0)
     }
 }
