@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.lib.Mecanum
 import org.firstinspires.ftc.teamcode.lib.tilt
 
 @TeleOp
-class TeleOp: LinearOpMode() {
+class TeleOpFSM: LinearOpMode() {
     @Throws(InterruptedException::class)
     override fun runOpMode() {
         val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
@@ -25,8 +25,8 @@ class TeleOp: LinearOpMode() {
         val currentGP2 = intake.currentGamepad2
         val previousGP2 = intake.previousGamepad2
         val depoSlide = DepoSlides(hardwareMap)
-        //val fsm = FSM(hardwareMap)
-       // val tilt = tilt(hardwareMap)
+        val fsm = FSM(hardwareMap)
+        // val tilt = tilt(hardwareMap)
 
         waitForStart()
 
@@ -38,14 +38,14 @@ class TeleOp: LinearOpMode() {
             }
 
             mecanum.mecanumLoop(gamepad1)
-            //fsm.fsmLoop(gamepad2)
+            fsm.fsmLoop(gamepad2)
             //tilt.tiltLoop(gamepad1)
-            deposit.depositLoop(gamepad2)
-            drone.drone(gamepad2)
+            //deposit.depositLoop(gamepad2)
+            //drone.drone(gamepad2)
             intake.intakeLoop(gamepad2)
-            depoSlide.slideLoop(gamepad2)
+            //depoSlide.slideLoop(gamepad2)
 
-            drone.telemetry(telemetryMultiple)
+            //drone.telemetry(telemetryMultiple)
             mecanum.telemetry(telemetryMultiple, gamepad1)
             intake.telemetry(telemetryMultiple)
             deposit.telemetry(telemetryMultiple)

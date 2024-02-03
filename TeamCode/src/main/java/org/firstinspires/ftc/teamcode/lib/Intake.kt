@@ -10,10 +10,10 @@ class Intake(hardwareMap: HardwareMap) {
         INTAKE(0.8), REVERSE(-0.7), REST(0.0)
     }
 
-    private val intake: DcMotor
+    val intake: DcMotor
     var currentGamepad2 = Gamepad()
     var previousGamepad2 = Gamepad()
-    private var intakeToggle = false
+    var intakeToggle = false
 
     init {
         intake = hardwareMap.get(DcMotor::class.java, "intake")

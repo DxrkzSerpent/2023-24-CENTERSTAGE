@@ -25,7 +25,7 @@ class DepoSlides(hardwareMap: HardwareMap) {
 
     private val slideMotor1: DcMotorEx
     private val slideMotor2: DcMotorEx
-    private var slidePos: Double = 0.0
+    var slidePos: Double = 0.0
     private val pControl = PIDCoefficients(p)
     private val controller = PIDFController(pControl)
     private var slidePower = 0.0
@@ -67,8 +67,8 @@ class DepoSlides(hardwareMap: HardwareMap) {
             target -= 25.0
         else if (gamepad.left_stick_button)
             target = Presets.TAPE_3.tape
-        else if (gamepad.dpad_left)
-            target = Presets.RESET.tape
+       // else if (gamepad.dpad_left)
+          //  target = Presets.RESET.tape
     }
 
     private fun hardStops(value: Int, low: Int, high: Int): Int {
