@@ -11,8 +11,8 @@ class BlueFront : QuickAutoData() {
     override fun runOpMode() {
         resetMotors()
         waitForStart()
-        seekToPos(500, 500, 0, 0)//example
-        seekToPos(400, 400, 0, 0)
-        seekToPos(400, 200, 0, 200)
+        //seekToPos(500, 500, 0, 0)//example
+        //seekToPos(400, 400, 0, 0)
+        //seekToPos(400, 200, 0, 200)
     }
 }
