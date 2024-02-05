@@ -39,5 +39,9 @@ class Mecanum(hardwareMap: HardwareMap) {
         y = -gamepad1.left_stick_y
         x = (gamepad1.left_stick_x * 1.1).toFloat()
         turn = -gamepad1.right_stick_x
+        if (gamepad1.a)
+            s = 0.4
+        else if (gamepad1.y)
+            s = 1.0
     }
 }

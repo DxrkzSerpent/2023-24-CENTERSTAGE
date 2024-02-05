@@ -19,6 +19,8 @@ class Deposit(hardwareMap: HardwareMap) {
         diffy2.direction = Servo.Direction.REVERSE
         arm1 = hardwareMap.get(Servo::class.java, "arm1")
         arm2 = hardwareMap.get(Servo::class.java, "arm2")
+        arm1.position = 1.0
+        arm2.position = 1.0
     }
 
     fun telemetry(telemetry: Telemetry){
@@ -31,21 +33,21 @@ class Deposit(hardwareMap: HardwareMap) {
         if (gamepad.y)
             claw.position = 0.0
         else if (gamepad.b)
-            claw.position = 0.5
+            claw.position = 0.6
 
         if (gamepad.dpad_left) {
-            diffy1.position = 0.73
-            diffy2.position = 0.73
+            diffy1.position += 0.001
+            diffy2.position += 0.001
         } else if (gamepad.dpad_right) {
-            diffy1.position = 0.15
-            diffy2.position = 0.15
+            diffy1.position -= 0.001
+            diffy2.position -= 0.001
         }
         if (gamepad.left_bumper) {
             arm2.position += 0.02
             arm1.position += 0.02
         } else if (gamepad.right_bumper) {
-            arm1.position -= 0.02
-            arm2.position -= 0.02
+            arm1.position = 0.12
+            arm2.position = 0.12
         }
     }
 }

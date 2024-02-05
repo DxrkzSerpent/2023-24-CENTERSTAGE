@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 
 class Intake(hardwareMap: HardwareMap) {
     enum class IntakeState(var intakePower: Double) {
-        INTAKE(0.8), REVERSE(-0.7), REST(0.0)
+        INTAKE(1.0), REVERSE(-0.7), REST(0.0)
     }
 
     val intake: DcMotor
