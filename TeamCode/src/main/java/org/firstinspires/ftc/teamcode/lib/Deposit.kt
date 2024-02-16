@@ -19,8 +19,10 @@ class Deposit(hardwareMap: HardwareMap) {
         diffy2.direction = Servo.Direction.REVERSE
         arm1 = hardwareMap.get(Servo::class.java, "arm1")
         arm2 = hardwareMap.get(Servo::class.java, "arm2")
-        arm1.position = 1.0
-        arm2.position = 1.0
+        diffy1.position = 0.92
+        diffy2.position = 0.92
+        arm1.position = 0.55
+        arm2.position = 0.55
     }
 
     fun telemetry(telemetry: Telemetry){
@@ -28,26 +30,63 @@ class Deposit(hardwareMap: HardwareMap) {
         telemetry.addData("diffy2 pos", diffy2.position)
         telemetry.addData("arm1 pos", arm1.position)
         telemetry.addData("arm2 pos", arm2.position)
+        telemetry.addData("claw pos", claw.position)
     }
+    fun openClaw() {
+        claw.position = 0.0
+    }
+
+    fun closeClaw() {
+        claw.position = 0.6
+    }
+
+    fun pickupPosition() {
+        diffy1.position = 0.912
+        diffy2.position = 0.912
+        arm1.position = 0.85
+        arm2.position = 0.85
+    }
+
+    fun idlePosition() {
+        diffy1.position = 0.92
+        diffy2.position = 0.92
+        arm1.position = 0.6
+        arm2.position = 0.6
+    }
+
+    fun armReset() {
+        arm1.position = 0.4
+        arm2.position = 0.4
+    }
+
+    fun transferPosition() {
+        arm1.position = 0.72
+        arm2.position = 0.72
+        diffy1.position = 0.94
+        diffy2.position = 0.94
+    }
+
+    fun placingPosition() {
+        arm1.position = 0.15
+        arm2.position = 0.15
+        diffy1.position = 0.82
+        diffy2.position = 0.82
+    }
+
     fun depositLoop(gamepad: Gamepad) {
         if (gamepad.y)
-            claw.position = 0.0
+            openClaw()
         else if (gamepad.b)
-            claw.position = 0.6
-
-        if (gamepad.dpad_left) {
-            diffy1.position += 0.001
-            diffy2.position += 0.001
-        } else if (gamepad.dpad_right) {
-            diffy1.position -= 0.001
-            diffy2.position -= 0.001
-        }
-        if (gamepad.left_bumper) {
-            arm2.position += 0.02
-            arm1.position += 0.02
-        } else if (gamepad.right_bumper) {
-            arm1.position = 0.12
-            arm2.position = 0.12
-        }
+            closeClaw()
+        else if (gamepad.dpad_left)
+            pickupPosition()
+        else if (gamepad.dpad_right)
+            idlePosition()
+        else if (gamepad.start)
+            armReset()
+        else if (gamepad.right_bumper)
+            transferPosition()
+        else if (gamepad.x)
+            placingPosition()
     }
 }

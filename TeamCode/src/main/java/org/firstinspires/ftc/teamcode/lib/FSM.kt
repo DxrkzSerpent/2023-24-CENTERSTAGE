@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.lib
 
+import android.util.EventLog
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -10,7 +11,7 @@ import kotlin.math.abs
 
 class FSM(hardwareMap: HardwareMap) {
     enum class State {
-        START, INTAKE, DEPOSIT, RETRACT
+        START, INTAKE, TRANSFER, DEPOSIT, RETRACT
     }
 
     var currentGamepad2 = Gamepad()
@@ -20,15 +21,23 @@ class FSM(hardwareMap: HardwareMap) {
     private val intake = Intake(hardwareMap)
     private var armTimer = ElapsedTime()
     private var intakeTimer = ElapsedTime()
+    private var transferTimer = ElapsedTime()
+    private var diffyTimer = ElapsedTime()
     private var v4bState: State = State.START
     private var intakeState: Intake.IntakeState = Intake.IntakeState.REST
     private val depositDelay = 1.0
+    private val transferDelay = 2.0
+    private val diffyDelay = 1.0
+
+
 
     init {
         armTimer.reset()
         intakeTimer.reset()
-        arm.arm1.position = 0.8
-        arm.arm2.position = 0.8
+        transferTimer.reset()
+        diffyTimer.reset()
+        arm.arm1.position = 0.7
+        arm.arm2.position = 0.7
     }
 
     fun telemetry(telemetry: Telemetry) {
@@ -40,8 +49,8 @@ class FSM(hardwareMap: HardwareMap) {
         intake.intake.power = intakeState.intakePower
         when(v4bState) {
             State.START -> {
-                arm.arm1.position = 0.8
-                arm.arm2.position = 0.8
+                arm.arm1.position = 0.7
+                arm.arm2.position = 0.7
                 if (gamepad.a) {
                     v4bState = State.INTAKE
                 }
@@ -52,18 +61,33 @@ class FSM(hardwareMap: HardwareMap) {
                     intakeState = Intake.IntakeState.REVERSE
                 else
                     intakeState = Intake.IntakeState.REST
-
+                if (gamepad.b) {
+                    arm.arm1.position = 0.9
+                    arm.arm2.position = 0.9
+                    transferTimer.reset()
+                }
+            } State.TRANSFER -> {
+                if (transferTimer.seconds() >= transferDelay)
+                    arm.claw.position = 0.6
                 if (gamepad.y) {
                     v4bState = State.DEPOSIT
-                    arm.claw.position = 0.5
-                    target = Presets.TAPE_3.tape
+                    //target = Presets.TAPE_3.tape
+                    transferTimer.reset()
                 }
             } State.DEPOSIT -> {
-                if (abs(Presets.TAPE_3.tape - slides.slidePos) > 100) {
+                if (transferTimer.seconds() >= transferDelay)
+                    arm.arm1.position = 0.86
+                    arm.arm2.position = 0.86
+                    diffyTimer.reset()
+                if (diffyTimer.seconds() >= diffyDelay) {
+                    arm.diffy1.position = 0.965
+                    arm.diffy2.position = 0.965
+                }
+                /* if (abs(Presets.TAPE_3.tape - slides.slidePos) > 100) {
                     arm.arm1.position = 0.0
                     arm.arm2.position = 0.0
-                    arm.diffy1.position = 0.15
-                    arm.diffy2.position = 0.15
+                    arm.diffy1.position = 0.85
+                    arm.diffy2.position = 0.85
                 } else if (gamepad.dpad_down) {
                     target = Presets.TAPE_2.tape
                 } else if (gamepad.dpad_left) {
@@ -74,6 +98,7 @@ class FSM(hardwareMap: HardwareMap) {
                     v4bState = State.RETRACT
                     intakeTimer.reset()
                 }
+                 */
             } State.RETRACT -> {
                 if (intakeTimer.seconds() >= depositDelay) {
                     arm.arm1.position = 0.6

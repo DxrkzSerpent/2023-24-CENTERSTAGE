@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.lib.Drone
 import org.firstinspires.ftc.teamcode.lib.FSM
 import org.firstinspires.ftc.teamcode.lib.Intake
 import org.firstinspires.ftc.teamcode.lib.Mecanum
-import org.firstinspires.ftc.teamcode.lib.tilt
 
 @TeleOp
 class TeleOpFSM: LinearOpMode() {
@@ -43,7 +42,7 @@ class TeleOpFSM: LinearOpMode() {
             //deposit.depositLoop(gamepad2)
             //drone.drone(gamepad2)
             intake.intakeLoop(gamepad2)
-            //depoSlide.slideLoop(gamepad2)
+            depoSlide.slideLoop(gamepad2)
 
             //drone.telemetry(telemetryMultiple)
             mecanum.telemetry(telemetryMultiple, gamepad1)

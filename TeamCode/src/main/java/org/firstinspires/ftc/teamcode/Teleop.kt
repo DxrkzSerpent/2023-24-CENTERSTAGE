@@ -7,11 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.exception.RobotCoreException
 import org.firstinspires.ftc.teamcode.lib.DepoSlides
 import org.firstinspires.ftc.teamcode.lib.Deposit
-import org.firstinspires.ftc.teamcode.lib.Drone
-import org.firstinspires.ftc.teamcode.lib.FSM
 import org.firstinspires.ftc.teamcode.lib.Intake
 import org.firstinspires.ftc.teamcode.lib.Mecanum
-import org.firstinspires.ftc.teamcode.lib.tilt
+import org.firstinspires.ftc.teamcode.lib.Tilt
 
 @TeleOp
 class TeleOp: LinearOpMode() {
@@ -19,14 +17,14 @@ class TeleOp: LinearOpMode() {
     override fun runOpMode() {
         val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         val mecanum = Mecanum(hardwareMap)
-        val drone = Drone(hardwareMap)
+        //val drone = Drone(hardwareMap)
         val intake = Intake(hardwareMap)
         val deposit = Deposit(hardwareMap)
         val currentGP2 = intake.currentGamepad2
         val previousGP2 = intake.previousGamepad2
         val depoSlide = DepoSlides(hardwareMap)
         //val fsm = FSM(hardwareMap)
-       // val tilt = tilt(hardwareMap)
+        val tilt = Tilt(hardwareMap)
 
         waitForStart()
 
@@ -39,17 +37,18 @@ class TeleOp: LinearOpMode() {
 
             mecanum.mecanumLoop(gamepad1)
             //fsm.fsmLoop(gamepad2)
-            //tilt.tiltLoop(gamepad1)
+            tilt.tiltLoop(gamepad2)
             deposit.depositLoop(gamepad2)
-            drone.drone(gamepad2)
+            //drone.drone(gamepad2)
             intake.intakeLoop(gamepad2)
             depoSlide.slideLoop(gamepad2)
 
-            drone.telemetry(telemetryMultiple)
+            //drone.telemetry(telemetryMultiple)
             mecanum.telemetry(telemetryMultiple, gamepad1)
             intake.telemetry(telemetryMultiple)
             deposit.telemetry(telemetryMultiple)
             depoSlide.telemetry(telemetryMultiple)
+            tilt.telemetry(telemetryMultiple)
 
 
             telemetryMultiple.update()
