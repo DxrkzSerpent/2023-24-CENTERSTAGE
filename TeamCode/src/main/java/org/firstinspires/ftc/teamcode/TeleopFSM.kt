@@ -18,7 +18,7 @@ class TeleOpFSM: LinearOpMode() {
     override fun runOpMode() {
         val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         val mecanum = Mecanum(hardwareMap)
-        val drone = Drone(hardwareMap)
+        //val drone = Drone(hardwareMap)
         val intake = Intake(hardwareMap)
         val deposit = Deposit(hardwareMap)
         val currentGP2 = intake.currentGamepad2
@@ -41,7 +41,7 @@ class TeleOpFSM: LinearOpMode() {
             //tilt.tiltLoop(gamepad1)
             //deposit.depositLoop(gamepad2)
             //drone.drone(gamepad2)
-            intake.intakeLoop(gamepad2)
+           // intake.intakeLoop(gamepad2)
             depoSlide.slideLoop(gamepad2)
 
             //drone.telemetry(telemetryMultiple)

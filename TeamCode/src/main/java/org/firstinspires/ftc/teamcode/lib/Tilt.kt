@@ -13,8 +13,8 @@ class Tilt(hardwareMap: HardwareMap) {
         Rtilt = hardwareMap.get(Servo::class.java, "Rtilt")
         Ltilt = hardwareMap.get(Servo::class.java, "Ltilt")
         Rtilt.direction = Servo.Direction.REVERSE
-        Rtilt.position = 0.0
-        Ltilt.position = 0.0
+        Rtilt.position = 0.05
+        Ltilt.position = 0.05
 
     }
 
@@ -31,8 +31,13 @@ class Tilt(hardwareMap: HardwareMap) {
         Ltilt.position += 0.005
         Rtilt.position += 0.005
     }
+
+    fun tiltTransfer() {
+        Ltilt.position += 0.3
+        Rtilt.position += 0.3
+    }
     fun tiltLoop(gamepad: Gamepad) {
-        if (gamepad.right_trigger > 0.1)
+        if (gamepad.right_trigger > 0.1 && Ltilt.position > 0.04)
             tiltDown()
         else if (gamepad.left_trigger > 0.1 && Ltilt.position < 0.3)
            tiltUp()

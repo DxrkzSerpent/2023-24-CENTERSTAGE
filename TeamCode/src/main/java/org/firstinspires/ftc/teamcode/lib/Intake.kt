@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry
 
 class Intake(hardwareMap: HardwareMap) {
     enum class IntakeState(var intakePower: Double) {
-        INTAKE(0.9), REVERSE(-0.7), REST(0.0)
+        INTAKE(1.0), REVERSE(-0.7), REST(0.0)
     }
 
     val intake: DcMotor
@@ -24,15 +24,26 @@ class Intake(hardwareMap: HardwareMap) {
         telemetry.addData("power", intake.power)
     }
 
+    fun intakeOn() {
+        intake.power = IntakeState.INTAKE.intakePower
+    }
+
+    fun intakeReverse() {
+        intake.power = IntakeState.REVERSE.intakePower
+    }
+
+    fun intakeOff() {
+        intake.power = IntakeState.REST.intakePower
+    }
     fun intakeLoop(gamepad: Gamepad) {
         if (intakeToggle)
-            intake.power = IntakeState.INTAKE.intakePower
+            intakeOn()
         else if (gamepad.x)
-            intake.power = IntakeState.REVERSE.intakePower
+            intakeReverse()
         else
-            intake.power = IntakeState.REST.intakePower
+            intakeOff()
 
-        if (currentGamepad2.a && !previousGamepad2.a)
-            intakeToggle = !intakeToggle
+        //if (currentGamepad2.a && !previousGamepad2.a)
+          //  intakeToggle = !intakeToggle
     }
 }

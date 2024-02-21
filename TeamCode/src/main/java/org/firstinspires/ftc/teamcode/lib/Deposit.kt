@@ -19,10 +19,7 @@ class Deposit(hardwareMap: HardwareMap) {
         diffy2.direction = Servo.Direction.REVERSE
         arm1 = hardwareMap.get(Servo::class.java, "arm1")
         arm2 = hardwareMap.get(Servo::class.java, "arm2")
-        diffy1.position = 0.92
-        diffy2.position = 0.92
-        arm1.position = 0.55
-        arm2.position = 0.55
+        idlePosition()
     }
 
     fun telemetry(telemetry: Telemetry){
@@ -37,14 +34,14 @@ class Deposit(hardwareMap: HardwareMap) {
     }
 
     fun closeClaw() {
-        claw.position = 0.6
+        claw.position = 0.4
     }
 
     fun pickupPosition() {
-        diffy1.position = 0.912
-        diffy2.position = 0.912
-        arm1.position = 0.85
-        arm2.position = 0.85
+        diffy1.position = 0.914
+        diffy2.position = 0.910
+        arm1.position = 0.8
+        arm2.position = 0.8
     }
 
     fun idlePosition() {
@@ -54,23 +51,27 @@ class Deposit(hardwareMap: HardwareMap) {
         arm2.position = 0.6
     }
 
-    fun armReset() {
-        arm1.position = 0.4
-        arm2.position = 0.4
+    fun diffyLeft() {
+        diffy1.position = 0.755
+        diffy2.position = 0.865
     }
 
+    fun diffyRight(){
+        diffy2.position = 0.75
+        diffy1.position = 0.87
+    }
     fun transferPosition() {
-        arm1.position = 0.72
-        arm2.position = 0.72
-        diffy1.position = 0.94
-        diffy2.position = 0.94
+        arm1.position = 0.7
+        arm2.position = 0.7
+        diffy1.position = 0.935
+        diffy2.position = 0.935
     }
 
     fun placingPosition() {
-        arm1.position = 0.15
-        arm2.position = 0.15
-        diffy1.position = 0.82
-        diffy2.position = 0.82
+        arm1.position = 0.0
+        arm2.position = 0.0
+        diffy1.position = 0.83
+        diffy2.position = 0.83
     }
 
     fun depositLoop(gamepad: Gamepad) {
@@ -83,7 +84,9 @@ class Deposit(hardwareMap: HardwareMap) {
         else if (gamepad.dpad_right)
             idlePosition()
         else if (gamepad.start)
-            armReset()
+            diffyLeft()
+        else if (gamepad.back)
+            diffyRight()
         else if (gamepad.right_bumper)
             transferPosition()
         else if (gamepad.x)
