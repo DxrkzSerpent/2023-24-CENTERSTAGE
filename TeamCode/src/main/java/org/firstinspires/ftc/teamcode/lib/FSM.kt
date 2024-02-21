@@ -37,7 +37,6 @@ class FSM(hardwareMap: HardwareMap) {
     }
 
     fun fsmLoop(gamepad: Gamepad) {
-        intake.intake.power = intakeState.intakePower
         when(v4bState) {
             State.START -> {
                 arm.idlePosition()
