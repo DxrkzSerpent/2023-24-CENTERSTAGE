@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.lib
 
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
@@ -22,6 +23,10 @@ class Mecanum(hardwareMap: HardwareMap) {
         brMotor = hardwareMap.get(DcMotorEx::class.java, "brMotor")
         frMotor.direction = DcMotorSimple.Direction.REVERSE
         brMotor.direction = DcMotorSimple.Direction.REVERSE
+        brMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        frMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        blMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        flMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
     }
 
     fun telemetry(telemetry: Telemetry, gamepad: Gamepad) {
