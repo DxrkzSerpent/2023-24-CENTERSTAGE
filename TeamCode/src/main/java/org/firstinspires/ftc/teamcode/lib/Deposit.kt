@@ -30,7 +30,7 @@ class Deposit(hardwareMap: HardwareMap) {
         telemetry.addData("claw pos", claw.position)
     }
     fun openClaw() {
-        claw.position = 0.0
+        claw.position = 0.05
     }
 
     fun closeClaw() {
@@ -38,8 +38,8 @@ class Deposit(hardwareMap: HardwareMap) {
     }
 
     fun pickupPosition() {
-        diffy1.position = 0.914
-        diffy2.position = 0.910
+        diffy1.position = 0.92
+        diffy2.position = 0.91
         arm1.position = 0.8
         arm2.position = 0.8
     }
@@ -47,18 +47,18 @@ class Deposit(hardwareMap: HardwareMap) {
     fun idlePosition() {
         diffy1.position = 0.92
         diffy2.position = 0.92
-        arm1.position = 0.6
-        arm2.position = 0.6
+        arm1.position = 0.5
+        arm2.position = 0.5
     }
 
     fun diffyLeft() {
-        diffy1.position = 0.755
-        diffy2.position = 0.865
+        diffy1.position = 0.765
+        diffy2.position = 0.875
     }
 
     fun diffyRight(){
-        diffy2.position = 0.75
-        diffy1.position = 0.87
+        diffy2.position = 0.765
+        diffy1.position = 0.875
     }
     fun transferPosition() {
         arm1.position = 0.7
@@ -68,10 +68,10 @@ class Deposit(hardwareMap: HardwareMap) {
     }
 
     fun placingPosition() {
-        arm1.position = 0.0
-        arm2.position = 0.0
-        diffy1.position = 0.83
-        diffy2.position = 0.83
+        arm1.position = 0.15
+        arm2.position = 0.15
+        diffy1.position = 0.775
+        diffy2.position = 0.885
     }
 
     fun depositLoop(gamepad: Gamepad) {

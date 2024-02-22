@@ -37,6 +37,9 @@ class FSM(hardwareMap: HardwareMap) {
     }
 
     fun fsmLoop(gamepad: Gamepad) {
+        intake.intake.power = intakeState.intakePower
+        if (intake.intakeToggle)
+            intake.intakeOn()
         when(v4bState) {
             State.START -> {
                 arm.idlePosition()
@@ -45,7 +48,7 @@ class FSM(hardwareMap: HardwareMap) {
                 }
             } State.INTAKE -> {
                 if (currentGamepad2.a && !previousGamepad2.a)
-                    intake.intakeOn()
+                    intake.intakeToggle = !intake.intakeToggle
                 else if (gamepad.x)
                     intake.intakeReverse()
                 else
@@ -56,7 +59,7 @@ class FSM(hardwareMap: HardwareMap) {
                 else if (gamepad.left_trigger > 0.1 && tilt.Ltilt.position < 0.3)
                     tilt.tiltUp()
 
-                if (gamepad.b) {
+                if (gamepad.x) {
                 transferTimer.reset()
                 v4bState = State.TRANSFER
                 }

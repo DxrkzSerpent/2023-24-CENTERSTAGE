@@ -13,11 +13,11 @@ import org.firstinspires.ftc.teamcode.lib.SlidePIDConfig.p
 import org.firstinspires.ftc.teamcode.lib.SlidePIDConfig.target
 
 enum class Presets(var tape: Double) {
-    RESET(0.0), TRANSFER(250.0), TAPE_1(500.0), TAPE_2(1500.0), TAPE_3(2400.0);
+    RESET(0.0), TRANSFER(800.0), TAPE_1(500.0), TAPE_2(1500.0), TAPE_3(2400.0);
 }
 @Config
 object SlidePIDConfig {
-    @JvmField var p: Double = 0.002
+    @JvmField var p: Double = 0.0035
     @JvmField var fg: Double = 0.15
     @JvmField var target: Double = 0.0
 }
@@ -92,6 +92,8 @@ class DepoSlides(hardwareMap: HardwareMap) {
             tape2()
         else if (gamepad.right_stick_button)
             reset()
+        else if (gamepad.left_bumper)
+            transferPos()
     }
 
     private fun hardStops(value: Int, low: Int, high: Int): Int {

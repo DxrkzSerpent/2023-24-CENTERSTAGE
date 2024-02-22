@@ -94,10 +94,10 @@ public class SampleMecanumDrive extends MecanumDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "flMotor");
-        leftRear = hardwareMap.get(DcMotorEx.class, "blMotor");
-        rightRear = hardwareMap.get(DcMotorEx.class, "brMotor");
-        rightFront = hardwareMap.get(DcMotorEx.class, "frMotor");
+        leftFront = hardwareMap.get(DcMotorEx.class, "brMotor");
+        leftRear = hardwareMap.get(DcMotorEx.class, "frMotor");
+        rightRear = hardwareMap.get(DcMotorEx.class, "flMotor");
+        rightFront = hardwareMap.get(DcMotorEx.class, "blMotor");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -117,8 +117,8 @@ public class SampleMecanumDrive extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();

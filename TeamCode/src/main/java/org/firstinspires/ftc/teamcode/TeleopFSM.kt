@@ -42,7 +42,7 @@ class TeleOpFSM: LinearOpMode() {
             //deposit.depositLoop(gamepad2)
             //drone.drone(gamepad2)
            // intake.intakeLoop(gamepad2)
-            depoSlide.slideLoop(gamepad2)
+            //depoSlide.slideLoop(gamepad2)
 
             //drone.telemetry(telemetryMultiple)
             mecanum.telemetry(telemetryMultiple, gamepad1)
