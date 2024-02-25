@@ -31,7 +31,7 @@ class DepoSlides(hardwareMap: HardwareMap) {
     private var slidePower = 0.0
     private var offset = 0
     private val high: Int = 2401
-    private val low: Int = -200
+    private val low: Int = -100
 
     init {
         slideMotor1 = hardwareMap.get(DcMotorEx::class.java, "lSlide")

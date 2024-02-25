@@ -30,23 +30,23 @@ class Deposit(hardwareMap: HardwareMap) {
         telemetry.addData("claw pos", claw.position)
     }
     fun openClaw() {
-        claw.position = 0.05
+        claw.position = 0.2
     }
 
     fun closeClaw() {
-        claw.position = 0.4
+        claw.position = 0.37
     }
 
     fun pickupPosition() {
         diffy1.position = 0.92
-        diffy2.position = 0.91
+        diffy2.position = 0.90
         arm1.position = 0.8
         arm2.position = 0.8
     }
 
     fun idlePosition() {
-        diffy1.position = 0.92
-        diffy2.position = 0.92
+        diffy1.position = 0.925
+        diffy2.position = 0.905
         arm1.position = 0.5
         arm2.position = 0.5
     }
@@ -63,8 +63,8 @@ class Deposit(hardwareMap: HardwareMap) {
     fun transferPosition() {
         arm1.position = 0.7
         arm2.position = 0.7
-        diffy1.position = 0.935
-        diffy2.position = 0.935
+        diffy1.position = 0.94
+        diffy2.position = 0.93
     }
 
     fun placingPosition() {
