@@ -17,7 +17,7 @@ enum class Presets(var tape: Double) {
 }
 @Config
 object SlidePIDConfig {
-    @JvmField var p: Double = 0.0035
+    @JvmField var p: Double = 0.01
     @JvmField var fg: Double = 0.15
     @JvmField var target: Double = 0.0
 }
@@ -30,8 +30,8 @@ class DepoSlides(hardwareMap: HardwareMap) {
     private val controller = PIDFController(pControl)
     private var slidePower = 0.0
     private var offset = 0
-    private val high: Int = 2401
-    private val low: Int = -100
+    private val high: Int = 2380
+    private val low: Int = -15
 
     init {
         slideMotor1 = hardwareMap.get(DcMotorEx::class.java, "lSlide")
@@ -49,18 +49,18 @@ class DepoSlides(hardwareMap: HardwareMap) {
         telemetry.addData("power",slideMotor1.power)
     }
 
-    private fun update() {
+    fun update() {
         slidePos = slideMotor1.currentPosition.toDouble() - offset
         controller.targetPosition = target
         slidePower = controller.update(slidePos) + fg
     }
 
     private fun increaseTarget() {
-        target += 25.0
+        target += 15.0
     }
 
     private fun decreaseTarget() {
-        target -= 25.0
+        target -= 15.0
     }
 
     fun reset(){

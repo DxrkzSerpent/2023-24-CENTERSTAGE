@@ -1,4 +1,4 @@
 package org.firstinspires.ftc.teamcode.Auto
 
-class FarAuto {
+class RedFar {
 }

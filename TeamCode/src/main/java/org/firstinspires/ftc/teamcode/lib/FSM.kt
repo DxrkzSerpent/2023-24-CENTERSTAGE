@@ -21,7 +21,7 @@ class FSM(hardwareMap: HardwareMap) {
     private val tilt = Tilt(hardwareMap)
     private var transferTimer = ElapsedTime()
     private var depositTimer = ElapsedTime()
-    private var v4bState: State = State.START
+    private var state: State = State.START
     private var intakeState: Intake.IntakeState = Intake.IntakeState.REST
     private val depositDelay = 1.0
     private val transferDelay = 1.5
@@ -33,18 +33,17 @@ class FSM(hardwareMap: HardwareMap) {
     }
 
     fun telemetry(telemetry: Telemetry) {
-        telemetry.addData("FSM", v4bState)
+        telemetry.addData("FSM", state)
     }
 
     fun fsmLoop(gamepad: Gamepad) {
-        intake.intake.power = intakeState.intakePower
         if (intake.intakeToggle)
             intake.intakeOn()
-        when(v4bState) {
+        when(state) {
             State.START -> {
                 arm.idlePosition()
                 if (gamepad.a) {
-                    v4bState = State.INTAKE
+                    state = State.INTAKE
                 }
             } State.INTAKE -> {
                 if (currentGamepad2.a && !previousGamepad2.a)
@@ -52,7 +51,7 @@ class FSM(hardwareMap: HardwareMap) {
                 else if (gamepad.x)
                     intake.intakeReverse()
                 else
-                    intake.intakeOff()
+                    intake.intakeReverse()
 
                 if (gamepad.right_trigger > 0.1 && tilt.Ltilt.position > 0.04)
                     tilt.tiltDown()
@@ -60,8 +59,8 @@ class FSM(hardwareMap: HardwareMap) {
                     tilt.tiltUp()
 
                 if (gamepad.x) {
-                transferTimer.reset()
-                v4bState = State.TRANSFER
+                    transferTimer.reset()
+                    state = State.TRANSFER
                 }
             } State.TRANSFER -> {
                 tilt.tiltTransfer()
@@ -71,7 +70,7 @@ class FSM(hardwareMap: HardwareMap) {
                     arm.closeClaw()
                 if (gamepad.y) {
                     arm.transferPosition()
-                    v4bState = State.DEPOSIT
+                    state = State.DEPOSIT
                     target = Presets.TRANSFER.tape
                 }
             } State.DEPOSIT -> {
@@ -94,7 +93,7 @@ class FSM(hardwareMap: HardwareMap) {
                 } else if (gamepad.a) {
                     arm.claw.position = 0.0
                     target = Presets.RESET.tape
-                    v4bState = State.RETRACT
+                    state = State.RETRACT
                     depositTimer.reset()
                 }
             } State.RETRACT -> {
@@ -102,13 +101,13 @@ class FSM(hardwareMap: HardwareMap) {
                     arm.idlePosition()
                     target = Presets.RESET.tape
                     if (slides.slidePos < 10) {
-                        v4bState = State.START
+                        state = State.START
                     }
                 }
             }
         }
 
-        if (gamepad.back && v4bState != State.START)
-            v4bState = State.START
+        if (gamepad.back && state != State.START)
+            state = State.START
     }
 }
