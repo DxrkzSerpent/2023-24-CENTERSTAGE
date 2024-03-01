@@ -175,26 +175,19 @@ object BlueAutoPaths {
                             Math.toRadians(-90.0)
                         )
                     )
-                        .lineToSplineHeading(
-                            Pose2d(
-                                26.0,
-                                34.0,
-                                Math.toRadians(-90.0)
-                            )
-                        )
+                        .lineToSplineHeading(Pose2d(8.0, 34.0, Math.toRadians(-115.0)))
                         .waitSeconds(0.2)
-                        .lineToSplineHeading(
-                            Pose2d(
-                                25.0,
-                                45.0,
-                                Math.toRadians(0.0)
-                            )
-                        )
-                        .lineToConstantHeading(
-                            Vector2d(45.0, 30.0),
-                        )
-                        .waitSeconds(1.0)
-                        .strafeLeft(30.0)
+                        .back(3.0)
+                        .lineToSplineHeading(Pose2d(15.0, 35.0, Math.toRadians(0.0)))
+                        .splineToConstantHeading(Vector2d(49.0, 25.0), 0.0)
+                        .addDisplacementMarker {
+                        }
+                        .forward(0.1)
+                        .back(3.0)
+                        .addDisplacementMarker {
+                        }
+                        .waitSeconds(2.0)
+                        .strafeLeft(32.0)
                         .forward(10.0)
                         .build()
                 }

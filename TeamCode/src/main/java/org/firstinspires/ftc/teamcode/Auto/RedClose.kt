@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.Auto
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.lib.DepoSlides
@@ -16,5 +18,92 @@ import org.firstinspires.ftc.teamcode.lib.Tilt
 class RedClose: LinearOpMode() {
 
     override fun runOpMode() {
+        val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
+        val drive = SampleMecanumDrive(hardwareMap)
+        val intake = Intake(hardwareMap)
+        val deposit = Deposit(hardwareMap)
+        val depoSlide = DepoSlides(hardwareMap)
+        val tilt = Tilt(hardwareMap)
+        val cv =  TargetPositionGetter(hardwareMap, TargetPositionGetter.VisionProc.Color.RED)
+        val redClose = Pose2d(11.5, -60.0, Math.toRadians(90.0))
+        val closeLeft = drive.trajectorySequenceBuilder(redClose)
+            .forward(3.0)
+            .lineToSplineHeading(Pose2d(14.0, -34.0, Math.toRadians(180.0)))
+            .forward(0.5)
+            .waitSeconds(0.2)
+            .back(2.0)
+            .lineToSplineHeading(Pose2d(25.0, -32.0, Math.toRadians(-10.0)))
+            .addDisplacementMarker {
+                deposit.placingPosition()
+            }
+            .lineToConstantHeading(Vector2d(53.5, -32.5))
+            .addDisplacementMarker {
+                deposit.openClaw()
+            }
+            .forward(0.1)
+            .back(5.0)
+            .waitSeconds(1.0)
+            .addDisplacementMarker {
+                deposit.idlePosition()
+            }
+            .strafeRight(34.0)
+            .forward(10.0)
+            .build()
+        val closeCenter = drive.trajectorySequenceBuilder(redClose)
+            .lineToSplineHeading(Pose2d(15.0, -31.0, Math.toRadians(90.0)))
+            .waitSeconds(0.2)
+            .addDisplacementMarker {
+                deposit.placingPosition()
+            }
+            .lineToSplineHeading(Pose2d(25.0, -45.0, Math.toRadians(0.0)))
+            .lineToConstantHeading(Vector2d(49.5, -30.0))
+            .addDisplacementMarker {
+                deposit.openClaw()
+            }
+            .forward(0.1)
+            .back(5.0)
+            .waitSeconds(1.0)
+            .strafeRight(23.0)
+            .addDisplacementMarker {
+                deposit.idlePosition()
+            }
 
+            .forward(10.0)
+            .build()
+        val closeRight = drive.trajectorySequenceBuilder(redClose)
+            .lineToSplineHeading(
+                Pose2d(20.0, -34.0, Math.toRadians(90.0)))
+            .waitSeconds(0.2)
+            .lineToSplineHeading(
+                Pose2d(25.0, -45.0, Math.toRadians(0.0)))
+            .lineToConstantHeading(Vector2d(45.0, -42.0))
+            .forward(0.1)
+            .back(5.0)
+            .waitSeconds(1.0)
+            .strafeRight(18.0)
+            .forward(10.0)
+            .build()
+
+        tilt.tiltTransfer()
+        deposit.closeClaw()
+        drive.poseEstimate = redClose
+        cv.doDetect(telemetryMultiple)
+        telemetry.update()
+
+        waitForStart()
+        if (cv.lcr() == TargetPositionGetter.LCR.Center)
+            drive.followTrajectorySequenceAsync(closeCenter)
+        else if (cv.lcr() == TargetPositionGetter.LCR.Right)
+            drive.followTrajectorySequenceAsync(closeRight)
+        else if (cv.lcr() == TargetPositionGetter.LCR.Left)
+            drive.followTrajectorySequenceAsync(closeLeft)
+
+        if (isStopRequested) return
+
+        while (opModeIsActive()) {
+            drive.update()
+            depoSlide.update()
+        }
+
+    }
 }

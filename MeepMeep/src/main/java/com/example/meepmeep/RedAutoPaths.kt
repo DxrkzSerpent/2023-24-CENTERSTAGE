@@ -178,7 +178,7 @@ object RedAutoPaths {
                     )
                         .lineToSplineHeading(
                             Pose2d(
-                                26.0,
+                                20.0,
                                 -34.0,
                                 Math.toRadians(90.0)
                             )
@@ -207,7 +207,7 @@ object RedAutoPaths {
                 .followTrajectorySequence { drive: DriveShim ->
                     drive.trajectorySequenceBuilder(
                         Pose2d(
-                            14.75,
+                            12.0,
                             -61.9,
                             Math.toRadians(90.0)
                         )
@@ -250,12 +250,13 @@ object RedAutoPaths {
                     )
                         .lineToSplineHeading(
                             Pose2d(
-                                8.0,
+                                14.0,
                                 -34.0,
-                                Math.toRadians(115.0)
+                                Math.toRadians(180.0)
                             )
                         )
                         .waitSeconds(0.2)
+                        .forward(4.0)
                         .lineToSplineHeading(
                             Pose2d(
                                 15.0,
@@ -278,9 +279,9 @@ object RedAutoPaths {
             //.addEntity(farRight)
             //.addEntity(farCenter)
             //.addEntity(farLeft)
-//            .addEntity(closeRight)
-            //.addEntity(closeCenter)
-            //.addEntity(closeLeft)
+            .addEntity(closeRight)
+            .addEntity(closeCenter)
+            .addEntity(closeLeft)
             .start()
     }
 }

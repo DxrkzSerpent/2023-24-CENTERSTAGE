@@ -10,6 +10,7 @@ class Drone(hardwareMap: HardwareMap) {
 
     init {
         drone = hardwareMap.get(Servo::class.java, "drone")
+        drone.position = 0.0
     }
 
     fun telemetry(telemetry: Telemetry) {
@@ -18,9 +19,9 @@ class Drone(hardwareMap: HardwareMap) {
 
     fun drone(gamepad: Gamepad) {
         if (gamepad.left_bumper) {
-            drone.position = 0.0
-        } else if (gamepad.right_bumper) {
             drone.position = 1.0
+        } else if (gamepad.right_bumper) {
+            drone.position = 0.0
         }
     }
 }

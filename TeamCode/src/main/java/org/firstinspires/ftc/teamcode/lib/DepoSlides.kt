@@ -23,12 +23,12 @@ object SlidePIDConfig {
 }
 class DepoSlides(hardwareMap: HardwareMap) {
 
-    private val slideMotor1: DcMotorEx
-    private val slideMotor2: DcMotorEx
+    val slideMotor1: DcMotorEx
+    val slideMotor2: DcMotorEx
     var slidePos: Double = 0.0
     private val pControl = PIDCoefficients(p)
     private val controller = PIDFController(pControl)
-    private var slidePower = 0.0
+    var slidePower = 0.0
     private var offset = 0
     private val high: Int = 2380
     private val low: Int = -15
@@ -49,7 +49,7 @@ class DepoSlides(hardwareMap: HardwareMap) {
         telemetry.addData("power",slideMotor1.power)
     }
 
-    fun update() {
+     fun update() {
         slidePos = slideMotor1.currentPosition.toDouble() - offset
         controller.targetPosition = target
         slidePower = controller.update(slidePos) + fg

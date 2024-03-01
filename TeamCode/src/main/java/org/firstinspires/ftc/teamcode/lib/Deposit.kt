@@ -19,6 +19,7 @@ class Deposit(hardwareMap: HardwareMap) {
         diffy2.direction = Servo.Direction.REVERSE
         arm1 = hardwareMap.get(Servo::class.java, "arm1")
         arm2 = hardwareMap.get(Servo::class.java, "arm2")
+        closeClaw()
         idlePosition()
     }
 
@@ -30,25 +31,25 @@ class Deposit(hardwareMap: HardwareMap) {
         telemetry.addData("claw pos", claw.position)
     }
     fun openClaw() {
-        claw.position = 0.2
+        claw.position = 0.0
     }
 
     fun closeClaw() {
-        claw.position = 0.37
+        claw.position = 1.0
     }
 
     fun pickupPosition() {
-        diffy1.position = 0.92
+        diffy1.position = 0.93
         diffy2.position = 0.90
         arm1.position = 0.8
         arm2.position = 0.8
     }
 
     fun idlePosition() {
-        diffy1.position = 0.925
-        diffy2.position = 0.905
-        arm1.position = 0.5
-        arm2.position = 0.5
+        diffy1.position = 0.93
+        diffy2.position = 0.90
+        arm1.position = 0.625
+        arm2.position = 0.625
     }
 
     fun diffyLeft() {
@@ -68,8 +69,8 @@ class Deposit(hardwareMap: HardwareMap) {
     }
 
     fun placingPosition() {
-        arm1.position = 0.15
-        arm2.position = 0.15
+        arm1.position = 0.0
+        arm2.position = 0.0
         diffy1.position = 0.775
         diffy2.position = 0.885
     }

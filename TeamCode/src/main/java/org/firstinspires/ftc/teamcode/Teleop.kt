@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.exception.RobotCoreException
 import org.firstinspires.ftc.teamcode.lib.DepoSlides
 import org.firstinspires.ftc.teamcode.lib.Deposit
+import org.firstinspires.ftc.teamcode.lib.Drone
 import org.firstinspires.ftc.teamcode.lib.Intake
 import org.firstinspires.ftc.teamcode.lib.Mecanum
 import org.firstinspires.ftc.teamcode.lib.Tilt
@@ -17,7 +18,7 @@ class TeleOp: LinearOpMode() {
     override fun runOpMode() {
         val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         val mecanum = Mecanum(hardwareMap)
-        //val drone = Drone(hardwareMap)
+        val drone = Drone(hardwareMap)
         val intake = Intake(hardwareMap)
         val deposit = Deposit(hardwareMap)
         val currentGP2 = intake.currentGamepad2
@@ -36,14 +37,13 @@ class TeleOp: LinearOpMode() {
             }
 
             mecanum.mecanumLoop(gamepad1)
-            //fsm.fsmLoop(gamepad2)
             tilt.tiltLoop(gamepad2)
             deposit.depositLoop(gamepad2)
-            //drone.drone(gamepad2)
+            drone.drone(gamepad1)
             intake.intakeLoop(gamepad2)
             depoSlide.slideLoop(gamepad2)
 
-            //drone.telemetry(telemetryMultiple)
+            drone.telemetry(telemetryMultiple)
             mecanum.telemetry(telemetryMultiple, gamepad1)
             intake.telemetry(telemetryMultiple)
             deposit.telemetry(telemetryMultiple)

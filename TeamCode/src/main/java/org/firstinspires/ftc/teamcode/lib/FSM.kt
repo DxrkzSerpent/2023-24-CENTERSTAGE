@@ -37,6 +37,8 @@ class FSM(hardwareMap: HardwareMap) {
     }
 
     fun fsmLoop(gamepad: Gamepad) {
+        slides.slideMotor1.power = slides.slidePower
+        slides.slideMotor2.power = slides.slidePower
         if (intake.intakeToggle)
             intake.intakeOn()
         when(state) {
