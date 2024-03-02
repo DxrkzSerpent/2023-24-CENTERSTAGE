@@ -15,6 +15,7 @@ import org.opencv.core.Core
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
+import org.opencv.core.Point
 import org.opencv.core.Rect
 import org.opencv.core.Scalar
 import org.opencv.imgproc.Imgproc
@@ -26,7 +27,8 @@ import java.util.LinkedList
  * @param centerCamFactor .5 is middle, increase (0-1) to make left side detection area larger
  */
 class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, val centerInLeft: Boolean = false, val centerCamFactor: Double = 0.5) {
-    class VisionProc(val color: Color) : VisionProcessor {
+    val width = 640
+    class VisionProc(val color: Color, val centerCamFactor: Double) : VisionProcessor {
         override fun init(width: Int, height: Int, calibration: CameraCalibration?) {
         }
         enum class Color {
@@ -138,6 +140,11 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
                     }
                     currentDetection = Rect(x1.toInt(), y1.toInt(), (x2 - x1).toInt(), (y2 - y1).toInt())
                     size = largestContArea
+                    var x = 640*centerCamFactor
+                    Imgproc.line(frame, Point(x, 0.0), Point(x, 480.0), Scalar(0.0, 255.0, 0.0, 255.0), 5)
+                    x = (currentDetection!!.x + currentDetection!!.width/2).toDouble()
+                    Imgproc.line(frame, Point(x, 0.0), Point(x, 480.0), Scalar(0.0, 0.0, 255.0, 255.0), 5)
+                    Imgproc.rectangle(frame, currentDetection!!, Scalar(0.0, 255.0, 255.0, 255.0), 5)
                 }
                 return currentDetection
             } catch (e: Exception) {
@@ -163,11 +170,11 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
         }
 
     }
-    val proc = VisionProc(color)
+    val proc = VisionProc(color, centerCamFactor)
     val visionPortal = VisionPortal.Builder()
         .setCamera(hardwareMap.get(WebcamName::class.java, "Webcam 1"))
         .addProcessor(proc)
-        .setCameraResolution(Size(640, 480))
+        .setCameraResolution(Size(width, 480))
         .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
         .enableLiveView(true)
         //.setCamera
@@ -203,7 +210,7 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
      * deal with bad data, 7500 ms is subject to change
      */
     fun doDetect(telemetry: MultipleTelemetry) : LCR {
-        val time = System.currentTimeMillis() + 7500
+        val time = System.currentTimeMillis() + 1500
         while (System.currentTimeMillis() < time) {
             telemetry(MultipleTelemetry(), false)
         }
@@ -220,7 +227,6 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
             telemetry.addData("Rect", proc.currentDetection!!.toString())
             val cd = proc.currentDetection!!
             val x = cd.x + cd.width/2
-            val width = 640
             val centerLine = width*centerCamFactor
             if (!centerInLeft) {
                 //c is cam, f is fov limit
