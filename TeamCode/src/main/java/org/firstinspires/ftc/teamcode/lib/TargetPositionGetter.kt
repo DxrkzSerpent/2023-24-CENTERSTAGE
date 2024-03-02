@@ -21,7 +21,11 @@ import org.opencv.imgproc.Imgproc
 import java.util.LinkedList
 
 
-class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color) {
+
+/**
+ * @param centerCamFactor .5 is middle, increase (0-1) to make left side detection area larger
+ */
+class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, val centerInLeft: Boolean = false, val centerCamFactor: Double = 0.5) {
     class VisionProc(val color: Color) : VisionProcessor {
         override fun init(width: Int, height: Int, calibration: CameraCalibration?) {
         }
@@ -180,7 +184,12 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color) {
     enum class LCR {
         Left,
         Center,
-        Right
+        Right;
+        fun reverse() = when (this) {
+            Left -> Right
+            Center -> this//uses less memory :)
+            Right -> Left
+        }
     }
     fun lcr() : LCR = if (leftDetections >= rightDetections && leftDetections >= centerDetections) {
             LCR.Left
@@ -212,18 +221,41 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color) {
             val cd = proc.currentDetection!!
             val x = cd.x + cd.width/2
             val width = 640
-            if (x < width/2) {
-                centerDetections++
-                telemetry.addData("Direction", "Center")
-            } else if (x > width/2) {
-                rightDetections++
-                telemetry.addData("Direction", "Right")
+            val centerLine = width*centerCamFactor
+            if (!centerInLeft) {
+                //c is cam, f is fov limit
+                // f-- --     f
+                //|       |
+                //|       |
+                //       c
+                if (x < centerLine) {
+                    centerDetections++
+                    telemetry.addData("Direction", "Center")
+                } else if (x > centerLine) {
+                    rightDetections++
+                    telemetry.addData("Direction", "Right")
+                } else {
+                    leftDetections++
+                    telemetry.addData("Direction", "Left")
+                }
             } else {
-                leftDetections++
-                telemetry.addData("Direction", "Left")
+            //f     -- --f
+                //|       |
+                //|       |
+                // c
+                if (x < centerLine) {
+                    leftDetections++
+                    telemetry.addData("Direction", "Left")
+                } else if (x > centerLine) {
+                    centerDetections++
+                    telemetry.addData("Direction", "Center")
+                } else {
+                    rightDetections++
+                    telemetry.addData("Direction", "Right")
+                }
             }
         } else {
-            telemetry.addData("Direction", "RIGHT")
+            telemetry.addData("Direction", "NONE")
         }
         telemetry.addData("Rect", proc.currentDetection)
 
