@@ -22,7 +22,6 @@ class BlueClose : LinearOpMode() {
         val deposit = Deposit(hardwareMap)
         val depoSlide = DepoSlides(hardwareMap)
         val tilt = Tilt(hardwareMap)
-        val cv =  TargetPositionGetter(hardwareMap, TargetPositionGetter.VisionProc.Color.BLUE)
         val blueClose = Pose2d(14.75, 61.9, Math.toRadians(-90.0))
         val closeRight = drive.trajectorySequenceBuilder(blueClose)
             .lineToSplineHeading(
@@ -77,7 +76,7 @@ class BlueClose : LinearOpMode() {
                 deposit.placingPosition()
             }
             .lineToSplineHeading(Pose2d(25.0, 45.0, Math.toRadians(0.0)))
-            .lineToConstantHeading(Vector2d(50.0, 41.5),)
+            .lineToConstantHeading(Vector2d(50.0, 40.0),)
             .addDisplacementMarker {
                 deposit.openClaw()
             }
@@ -95,10 +94,11 @@ class BlueClose : LinearOpMode() {
         tilt.tiltTransfer()
         deposit.closeClaw()
         drive.poseEstimate = blueClose
-        cv.doDetect(telemetryMultiple)
-        telemetry.update()
+        val cv =  TargetPositionGetter(hardwareMap, TargetPositionGetter.VisionProc.Color.BLUE)
 
         waitForStart()
+        cv.doDetect(telemetryMultiple)
+        telemetry.update()
         if (cv.lcr() == TargetPositionGetter.LCR.Center)
             drive.followTrajectorySequenceAsync(closeCenter)
         else if (cv.lcr() == TargetPositionGetter.LCR.Right)

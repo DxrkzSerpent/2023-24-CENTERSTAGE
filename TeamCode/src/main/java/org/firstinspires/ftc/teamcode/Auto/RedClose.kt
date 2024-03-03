@@ -24,7 +24,6 @@ class RedClose: LinearOpMode() {
         val deposit = Deposit(hardwareMap)
         val depoSlide = DepoSlides(hardwareMap)
         val tilt = Tilt(hardwareMap)
-        val cv =  TargetPositionGetter(hardwareMap, TargetPositionGetter.VisionProc.Color.RED)
         val redClose = Pose2d(11.5, -60.0, Math.toRadians(90.0))
         val closeLeft = drive.trajectorySequenceBuilder(redClose)
             .forward(3.0)
@@ -50,20 +49,20 @@ class RedClose: LinearOpMode() {
             .forward(10.0)
             .build()
         val closeCenter = drive.trajectorySequenceBuilder(redClose)
-            .lineToSplineHeading(Pose2d(15.0, -31.0, Math.toRadians(90.0)))
+            .lineToSplineHeading(Pose2d(14.5, -31.0, Math.toRadians(90.0)))
             .waitSeconds(0.2)
             .addDisplacementMarker {
                 deposit.placingPosition()
             }
-            .lineToSplineHeading(Pose2d(25.0, -45.0, Math.toRadians(0.0)))
-            .lineToConstantHeading(Vector2d(49.5, -30.0))
+            .lineToSplineHeading(Pose2d(25.0, -46.0, Math.toRadians(10.0)))
+            .lineToConstantHeading(Vector2d(49.5, -32.2))
             .addDisplacementMarker {
                 deposit.openClaw()
             }
             .forward(0.1)
             .back(5.0)
             .waitSeconds(1.0)
-            .strafeRight(23.0)
+            .strafeRight(26.0)
             .addDisplacementMarker {
                 deposit.idlePosition()
             }
@@ -71,26 +70,35 @@ class RedClose: LinearOpMode() {
             .forward(10.0)
             .build()
         val closeRight = drive.trajectorySequenceBuilder(redClose)
-            .lineToSplineHeading(
-                Pose2d(20.0, -34.0, Math.toRadians(90.0)))
+            .lineToSplineHeading(Pose2d(21.5, -34.0, Math.toRadians(90.0)))
+            .back(3.0)
+            .addDisplacementMarker {
+                deposit.placingPosition()
+            }
             .waitSeconds(0.2)
-            .lineToSplineHeading(
-                Pose2d(25.0, -45.0, Math.toRadians(0.0)))
-            .lineToConstantHeading(Vector2d(45.0, -42.0))
+            .lineToLinearHeading(Pose2d(25.0, -45.0, Math.toRadians(-15.0)))
+            .lineToConstantHeading(Vector2d(50.0, -42.0))
+            .addDisplacementMarker {
+                deposit.openClaw()
+            }
             .forward(0.1)
-            .back(5.0)
+            .back(6.0)
             .waitSeconds(1.0)
             .strafeRight(18.0)
+            .addDisplacementMarker {
+                deposit.idlePosition()
+            }
             .forward(10.0)
             .build()
 
         tilt.tiltTransfer()
         deposit.closeClaw()
         drive.poseEstimate = redClose
-        cv.doDetect(telemetryMultiple)
         telemetry.update()
+        val cv =  TargetPositionGetter(hardwareMap, TargetPositionGetter.VisionProc.Color.RED)
 
         waitForStart()
+        cv.doDetect(telemetryMultiple)
         if (cv.lcr() == TargetPositionGetter.LCR.Center)
             drive.followTrajectorySequenceAsync(closeCenter)
         else if (cv.lcr() == TargetPositionGetter.LCR.Right)

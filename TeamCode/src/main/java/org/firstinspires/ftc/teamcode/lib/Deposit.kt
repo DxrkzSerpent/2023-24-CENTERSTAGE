@@ -12,6 +12,7 @@ class Deposit(hardwareMap: HardwareMap) {
     val arm1: Servo
     val arm2: Servo
 
+
     init {
         claw = hardwareMap.get(Servo::class.java, "claw")
         diffy1 = hardwareMap.get(Servo::class.java, "diffy1")
@@ -39,17 +40,17 @@ class Deposit(hardwareMap: HardwareMap) {
     }
 
     fun pickupPosition() {
-        diffy1.position = 0.93
-        diffy2.position = 0.90
+        diffy1.position = 0.89
+        diffy2.position = 0.86
         arm1.position = 0.8
         arm2.position = 0.8
     }
 
     fun idlePosition() {
-        diffy1.position = 0.93
-        diffy2.position = 0.90
-        arm1.position = 0.625
-        arm2.position = 0.625
+        diffy1.position = 0.89
+        diffy2.position = 0.86
+        arm1.position = 0.5
+        arm2.position = 0.5
     }
 
     fun diffyLeft() {
@@ -64,15 +65,15 @@ class Deposit(hardwareMap: HardwareMap) {
     fun transferPosition() {
         arm1.position = 0.7
         arm2.position = 0.7
-        diffy1.position = 0.94
-        diffy2.position = 0.93
+        diffy1.position = 0.92
+        diffy2.position = 0.89
     }
 
     fun placingPosition() {
         arm1.position = 0.0
         arm2.position = 0.0
-        diffy1.position = 0.775
-        diffy2.position = 0.885
+        diffy1.position = 0.73
+        diffy2.position = 0.84
     }
 
     fun depositLoop(gamepad: Gamepad) {

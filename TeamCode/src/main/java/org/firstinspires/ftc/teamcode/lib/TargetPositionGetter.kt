@@ -28,6 +28,7 @@ import java.util.LinkedList
  */
 class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, val centerInLeft: Boolean = false, val centerCamFactor: Double = 0.5) {
     val width = 640
+    val minsize = 125
     class VisionProc(val color: Color, val centerCamFactor: Double) : VisionProcessor {
         override fun init(width: Int, height: Int, calibration: CameraCalibration?) {
         }
@@ -55,7 +56,7 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
                     // Detect blue color
                     Core.inRange(
                         hsvMat,
-                        Scalar(100.0, 100.0, 100.0),
+                        Scalar(100.0, 75.0, 20.0),
                         Scalar(140.0, 255.0, 255.0),
                         out
                     )
@@ -65,13 +66,13 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
                     var highRed = Mat()
                     Core.inRange(
                         hsvMat,
-                        Scalar(0.0, 100.0, 100.0),
+                        Scalar(0.0, 75.0, 20.0),
                         Scalar(10.0, 255.0, 255.0),
                         lowRed
                     )
                     Core.inRange(
                         hsvMat,
-                        Scalar(160.0, 100.0, 100.0),
+                        Scalar(160.0, 75.0, 20.0),
                         Scalar(180.0, 255.0, 255.0),
                         highRed
                     )
@@ -105,6 +106,11 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
                 val boundRects = arrayOfNulls<Rect>(contours.size)
                 contours.forEachIndexed { i, contour ->
                     boundRects[i] = Imgproc.boundingRect(contour)
+                }
+
+                contours = contours.filter {
+                    //null if all points good 480 is height
+                    it.toList().firstOrNull { it.y < 300 } == null/* && it.toList().size > 125*/
                 }
 
                 Imgproc.drawContours(frame, contours, -1, Scalar(255.0, 0.0, 0.0), 2)
@@ -188,6 +194,7 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
     private var leftDetections = 0
     private var rightDetections = 0
     private var centerDetections = 0
+    private var totalDetections = 0
     enum class LCR {
         Left,
         Center,
@@ -218,12 +225,15 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
         telemetry.addData("LCRDetectionsLeft=", leftDetections)
         telemetry.addData("LCRDetectionsCenter=", centerDetections)
         telemetry.addData("LCRDetectionsRight=", rightDetections)
+        telemetry.addData("LCRDetectionsTotal=", totalDetections)
+        telemetry.update()
         return lcr()
     }
     fun telemetry(telemetry: MultipleTelemetry, doing: Boolean) {
+        totalDetections++
         proc.tele = telemetry
         telemetry.addData("RectSize", proc.size)
-        if (proc.currentDetection != null && proc.size > 150) {
+        if (proc.currentDetection != null /*&& proc.size > 125*/) {
             telemetry.addData("Rect", proc.currentDetection!!.toString())
             val cd = proc.currentDetection!!
             val x = cd.x + cd.width/2
