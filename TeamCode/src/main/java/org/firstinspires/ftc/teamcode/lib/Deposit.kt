@@ -42,25 +42,25 @@ class Deposit(hardwareMap: HardwareMap) {
     fun pickupPosition() {
         diffy1.position = 0.89
         diffy2.position = 0.86
-        arm1.position = 0.8
-        arm2.position = 0.8
+        arm1.position = 0.76
+        arm2.position = 0.76
     }
 
     fun idlePosition() {
         diffy1.position = 0.89
         diffy2.position = 0.86
-        arm1.position = 0.5
-        arm2.position = 0.5
+        arm1.position = 0.6
+        arm2.position = 0.6
     }
 
     fun diffyLeft() {
-        diffy1.position = 0.765
-        diffy2.position = 0.875
+        diffy1.position = 0.72
+        diffy2.position = 0.89
     }
 
     fun diffyRight(){
-        diffy2.position = 0.765
-        diffy1.position = 0.875
+        diffy1.position = 0.78
+        diffy2.position = 0.83
     }
     fun transferPosition() {
         arm1.position = 0.7
@@ -73,7 +73,7 @@ class Deposit(hardwareMap: HardwareMap) {
         arm1.position = 0.0
         arm2.position = 0.0
         diffy1.position = 0.73
-        diffy2.position = 0.84
+        diffy2.position = 0.83
     }
 
     fun depositLoop(gamepad: Gamepad) {
