@@ -41,12 +41,12 @@ class Mecanum(hardwareMap: HardwareMap) {
         blMotor.power = (y - x + turn) * s
         frMotor.power = (y - x - turn) * s
         brMotor.power = (y + x - turn) * s
-        y = -gamepad1.left_stick_y
-        x = (gamepad1.left_stick_x * 1.1).toFloat()
-        turn = -gamepad1.right_stick_x
-         if (gamepad1.a)
+        y = gamepad1.left_stick_y
+        x = -(gamepad1.left_stick_x * 1.1).toFloat()
+        turn = gamepad1.right_stick_x
+         if (gamepad1.right_bumper)
             s = 0.4
-        else if (gamepad1.y)
+        else if (gamepad1.left_bumper)
             s = 1.0
     }
 }

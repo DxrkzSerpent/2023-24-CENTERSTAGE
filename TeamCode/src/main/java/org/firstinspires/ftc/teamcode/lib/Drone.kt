@@ -18,9 +18,9 @@ class Drone(hardwareMap: HardwareMap) {
     }
 
     fun drone(gamepad: Gamepad) {
-        if (gamepad.left_bumper) {
+        if (gamepad.left_trigger > 0.1) {
             drone.position = 1.0
-        } else if (gamepad.right_bumper) {
+        } else if (gamepad.right_trigger > 0.1) {
             drone.position = 0.0
         }
     }

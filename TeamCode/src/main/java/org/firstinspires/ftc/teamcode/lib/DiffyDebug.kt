@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
-class Deposit(hardwareMap: HardwareMap) {
+class DiffyDebug (hardwareMap: HardwareMap) {
     val claw: Servo
     val diffy1: Servo
     val diffy2: Servo
@@ -53,15 +53,6 @@ class Deposit(hardwareMap: HardwareMap) {
         arm2.position = 0.6
     }
 
-    fun diffyLeft() {
-        diffy1.position = 0.72
-        diffy2.position = 0.85
-    }
-
-    fun diffyRight(){
-        diffy1.position = 0.78
-        diffy2.position = 0.79
-    }
     fun transferPosition() {
         arm1.position = 0.7
         arm2.position = 0.7
@@ -91,10 +82,19 @@ class Deposit(hardwareMap: HardwareMap) {
             placingPosition()
     }
 
+    fun diffyAdjustmentRight() {
+        diffy1.position += 0.0001
+        diffy2.position -= 0.0001
+    }
+
+    fun diffyAdjustmentLeft() {
+        diffy1.position -= 0.0001
+        diffy2.position += 0.0001
+    }
     fun diffyTurning(gamepad: Gamepad) {
         if (gamepad.x)
-            diffyLeft()
+            diffyAdjustmentLeft()
         else if (gamepad.b)
-            diffyRight()
+            diffyAdjustmentRight()
     }
 }

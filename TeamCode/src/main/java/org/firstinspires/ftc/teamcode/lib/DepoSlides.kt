@@ -31,12 +31,12 @@ class DepoSlides(hardwareMap: HardwareMap) {
     var slidePower = 0.0
     private var offset = 0
     private val high: Int = 2380
-    private val low: Int = -15
+    private val low: Int = -200
 
     init {
         slideMotor1 = hardwareMap.get(DcMotorEx::class.java, "lSlide")
         slideMotor2 = hardwareMap.get(DcMotorEx::class.java, "rSlide")
-        slideMotor1.direction = DcMotorSimple.Direction.REVERSE
+        slideMotor2.direction = DcMotorSimple.Direction.REVERSE
         offset = slideMotor1.currentPosition
         slidePos = slideMotor1.currentPosition.toDouble() - offset
         target = 0.0
@@ -89,11 +89,7 @@ class DepoSlides(hardwareMap: HardwareMap) {
         else if (gamepad.dpad_down)
             decreaseTarget()
         else if (gamepad.left_stick_button)
-            tape2()
-        else if (gamepad.right_stick_button)
             reset()
-        else if (gamepad.left_bumper)
-            transferPos()
     }
 
     private fun hardStops(value: Int, low: Int, high: Int): Int {

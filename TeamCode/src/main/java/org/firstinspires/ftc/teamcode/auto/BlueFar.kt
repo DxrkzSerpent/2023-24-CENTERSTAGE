@@ -1,16 +1,11 @@
-package org.firstinspires.ftc.teamcode.Auto
+package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive
-import org.firstinspires.ftc.teamcode.lib.DepoSlides
-import org.firstinspires.ftc.teamcode.lib.Deposit
-import org.firstinspires.ftc.teamcode.lib.Intake
 import org.firstinspires.ftc.teamcode.lib.TargetPositionGetter
-import org.firstinspires.ftc.teamcode.lib.Tilt
 
 class BlueFar: LinearOpMode() {
     override fun runOpMode() {

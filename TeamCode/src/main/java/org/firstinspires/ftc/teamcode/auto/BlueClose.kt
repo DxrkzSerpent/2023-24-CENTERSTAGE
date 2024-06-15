@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto
+package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
@@ -9,15 +9,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.lib.DepoSlides
 import org.firstinspires.ftc.teamcode.lib.Deposit
-import org.firstinspires.ftc.teamcode.lib.Intake
-import org.firstinspires.ftc.teamcode.lib.TargetPositionGetter
 import org.firstinspires.ftc.teamcode.lib.Tilt
+import org.firstinspires.ftc.teamcode.lib.vision.BluePropProcessor
+import org.firstinspires.ftc.teamcode.lib.vision.PropProcessor.Location
 
 
 @Autonomous
 class BlueClose : LinearOpMode() {
+    private var location: Location = Location.MIDDLE
+    private val bluePropProcessor: BluePropProcessor? = null
+    val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
+
     override fun runOpMode() {
-        val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         val drive = SampleMecanumDrive(hardwareMap)
         val deposit = Deposit(hardwareMap)
         val depoSlide = DepoSlides(hardwareMap)
@@ -56,7 +59,7 @@ class BlueClose : LinearOpMode() {
                 deposit.placingPosition()
             }
             .lineToSplineHeading(Pose2d(15.0, 45.0, Math.toRadians(0.0)))
-            .lineToConstantHeading(Vector2d(50.0, 32.5),)
+            .lineToConstantHeading(Vector2d(50.0, 32.5))
             .addDisplacementMarker {
                 deposit.openClaw()
             }
@@ -76,7 +79,7 @@ class BlueClose : LinearOpMode() {
                 deposit.placingPosition()
             }
             .lineToSplineHeading(Pose2d(25.0, 45.0, Math.toRadians(0.0)))
-            .lineToConstantHeading(Vector2d(50.0, 40.0),)
+            .lineToConstantHeading(Vector2d(50.0, 40.0))
             .addDisplacementMarker {
                 deposit.openClaw()
             }
@@ -94,19 +97,18 @@ class BlueClose : LinearOpMode() {
         tilt.tiltTransfer()
         deposit.closeClaw()
         drive.poseEstimate = blueClose
-        val cv =  TargetPositionGetter(hardwareMap, TargetPositionGetter.VisionProc.Color.BLUE)
+
+        while(!isStarted){
+            location = bluePropProcessor!!.location
+            telemetry.update()
+        }
 
         waitForStart()
-        cv.doDetect(telemetryMultiple)
-        telemetry.update()
-        if (cv.lcr() == TargetPositionGetter.LCR.Center)
-            drive.followTrajectorySequenceAsync(closeCenter)
-        else if (cv.lcr() == TargetPositionGetter.LCR.Right)
-            drive.followTrajectorySequenceAsync(closeRight)
-        else if (cv.lcr() == TargetPositionGetter.LCR.Left)
-            drive.followTrajectorySequenceAsync(closeLeft)
-
-        if (isStopRequested) return
+        when (location) {
+            Location.MIDDLE -> drive.followTrajectorySequenceAsync(closeCenter)
+            Location.RIGHT -> drive.followTrajectorySequenceAsync(closeRight)
+            Location.LEFT -> drive.followTrajectorySequenceAsync(closeLeft)
+        }
 
         while (opModeIsActive()) {
             drive.update()

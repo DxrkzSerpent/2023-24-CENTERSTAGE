@@ -1,0 +1,124 @@
+/*
+ * Copyright (c) 2023 Sebastian Erives
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+package org.firstinspires.ftc.teamcode.lib.vision;
+
+import android.graphics.Canvas;
+
+import com.acmerobotics.dashboard.config.Config;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Config
+public class BluePropProcessor extends PropProcessor {
+
+    public static double lowY = 0.05;
+    public static double lowCr = -0.01;
+    public static double lowCb = 0;
+    public static double highY = 0.33;
+    public static double highCr = -0.05;
+    public static double highCb = 0.11;
+    public Scalar lower = new Scalar(lowY,lowCr,lowCb);
+    public Scalar upper = new Scalar(highY,highCr,highCb);
+
+
+    public BluePropProcessor(Telemetry telemetry) {
+        this.telemetry = telemetry;
+    }
+
+    @Override
+    public void init(int width, int height, CameraCalibration calibration) {
+    }
+
+    @Override
+    public Object processFrame(Mat frame, long captureTimeNanos) {
+
+        Scalar lower = new Scalar(lowY,lowCr,lowCb);
+        Scalar upper = new Scalar(highY,highCr,highCb);
+
+
+        Imgproc.cvtColor(frame, ycrcbMat, colorSpace.cvtCode);
+
+        Core.inRange(ycrcbMat, lower, upper, binaryMat);
+
+        maskedInputMat.release();
+
+        Core.bitwise_and(frame, frame, maskedInputMat, binaryMat);
+
+        //use binary mat from here
+        List<MatOfPoint> countersList = new ArrayList<>();
+        Imgproc.findContours(binaryMat, countersList, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.drawContours(binaryMat, countersList,0, new Scalar(0,0,255));
+
+        Rect hat = new Rect(new Point(0,0), new Point(1,1));
+
+        for (MatOfPoint countor : countersList)
+        {
+
+            Rect rect = Imgproc.boundingRect(countor);
+            int centerY = rect.y + rect.height;
+            if (rect.area() > hat.area() && centerY >= 480/2) {
+                hat = rect;
+            }
+
+        }
+
+        Imgproc.rectangle(maskedInputMat, hat, new Scalar(255,255,255));
+
+        int centerX = hat.x + hat.width;
+        int area = (int) hat.area();
+        telemetry.addData("Area: ", area);
+        telemetry.addData("CenterX: ", centerX);
+        if(centerX <= 300 && area >= 200 ){ //bottom half
+            location = Location.MIDDLE;
+            telemetry.addData("Position:", " MIDDLE");
+        }else if(centerX >= 300 && centerX <= 800 && area >= 200){
+            location = Location.RIGHT;
+            telemetry.addData("Position:", " RIGHT");
+        }else {
+            location = Location.LEFT;
+            telemetry.addData("Position:", " LEFT");
+        }
+        telemetry.update();
+
+        maskedInputMat.copyTo(frame);
+        return null;
+    }
+
+    @Override
+    public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
+    }
+
+
+}

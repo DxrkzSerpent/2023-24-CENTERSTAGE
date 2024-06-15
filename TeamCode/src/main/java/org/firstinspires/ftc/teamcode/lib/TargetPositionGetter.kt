@@ -66,14 +66,14 @@ class TargetPositionGetter(hardwareMap: HardwareMap, color: VisionProc.Color, va
                     var highRed = Mat()
                     Core.inRange(
                         hsvMat,
-                        Scalar(0.0, 75.0, 20.0),
+                        Scalar(0.0, 49.0, 98.0),
                         Scalar(10.0, 255.0, 255.0),
                         lowRed
                     )
                     Core.inRange(
                         hsvMat,
-                        Scalar(160.0, 75.0, 20.0),
-                        Scalar(180.0, 255.0, 255.0),
+                        Scalar(350.0, 75.0, 20.0),
+                        Scalar(360.0, 255.0, 255.0),
                         highRed
                     )
                     Core.add(lowRed, highRed, out)

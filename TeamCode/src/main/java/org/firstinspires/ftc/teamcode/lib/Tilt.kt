@@ -33,8 +33,8 @@ class Tilt(hardwareMap: HardwareMap) {
     }
 
     fun tiltTransfer() {
-        Ltilt.position = 0.3
-        Rtilt.position = 0.3
+        Ltilt.position = 0.33
+        Rtilt.position = 0.33
     }
     fun tiltLoop(gamepad: Gamepad) {
         if (gamepad.right_trigger > 0.1 && Ltilt.position > 0.04)

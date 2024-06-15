@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.lib.Tilt
 
 @Photon
 @TeleOp
-class TeleOp: LinearOpMode() {
+class TeleOp1Driver: LinearOpMode() {
     @Throws(InterruptedException::class)
     override fun runOpMode() {
         val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
@@ -34,17 +34,17 @@ class TeleOp: LinearOpMode() {
         while (opModeIsActive()) {
             try {
                 previousGP2.copy(currentGP2)
-                currentGP2.copy(gamepad2)
+                currentGP2.copy(gamepad1)
             } catch (_: RobotCoreException) {
             }
 
             mecanum.mecanumLoop(gamepad1)
-            tilt.tiltLoop(gamepad2)
-            deposit.depositLoop(gamepad2)
+            tilt.tiltLoop(gamepad1)
+            deposit.depositLoop(gamepad1)
             deposit.diffyTurning(gamepad1)
             drone.drone(gamepad1)
-            intake.intakeLoop(gamepad2)
-            depoSlide.slideLoop(gamepad2)
+            intake.intakeLoop(gamepad1)
+            depoSlide.slideLoop(gamepad1)
 
 
             drone.telemetry(telemetryMultiple)

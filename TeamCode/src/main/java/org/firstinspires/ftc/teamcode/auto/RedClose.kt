@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode.Auto
+package org.firstinspires.ftc.teamcode.auto
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.lib.DepoSlides
@@ -13,9 +12,14 @@ import org.firstinspires.ftc.teamcode.lib.Deposit
 import org.firstinspires.ftc.teamcode.lib.Intake
 import org.firstinspires.ftc.teamcode.lib.TargetPositionGetter
 import org.firstinspires.ftc.teamcode.lib.Tilt
+import org.firstinspires.ftc.teamcode.lib.vision.PropProcessor
+import org.firstinspires.ftc.teamcode.lib.vision.RedPropProcessor
 
 @Autonomous
 class RedClose: LinearOpMode() {
+    private var location: PropProcessor.Location = PropProcessor.Location.MIDDLE
+    private val redPropProcessor: RedPropProcessor? = null
+    val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
 
     override fun runOpMode() {
         val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
@@ -94,19 +98,17 @@ class RedClose: LinearOpMode() {
         tilt.tiltTransfer()
         deposit.closeClaw()
         drive.poseEstimate = redClose
-        telemetry.update()
-        val cv =  TargetPositionGetter(hardwareMap, TargetPositionGetter.VisionProc.Color.RED)
 
+        while(!isStarted){
+            location = redPropProcessor!!.location
+            telemetry.update()
+        }
         waitForStart()
-        cv.doDetect(telemetryMultiple)
-        if (cv.lcr() == TargetPositionGetter.LCR.Center)
-            drive.followTrajectorySequenceAsync(closeCenter)
-        else if (cv.lcr() == TargetPositionGetter.LCR.Right)
-            drive.followTrajectorySequenceAsync(closeRight)
-        else if (cv.lcr() == TargetPositionGetter.LCR.Left)
-            drive.followTrajectorySequenceAsync(closeLeft)
-
-        if (isStopRequested) return
+        when (location) {
+            PropProcessor.Location.MIDDLE -> drive.followTrajectorySequenceAsync(closeCenter)
+            PropProcessor.Location.RIGHT -> drive.followTrajectorySequenceAsync(closeRight)
+            PropProcessor.Location.LEFT -> drive.followTrajectorySequenceAsync(closeLeft)
+        }
 
         while (opModeIsActive()) {
             drive.update()
