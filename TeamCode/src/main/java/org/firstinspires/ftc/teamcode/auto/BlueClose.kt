@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.lib.vision.PropProcessor.Location
 @Autonomous
 class BlueClose : LinearOpMode() {
     private var location: Location = Location.MIDDLE
-    private val bluePropProcessor: BluePropProcessor? = null
+    private val bluePropProcessor: BluePropProcessor = BluePropProcessor(telemetry)
     val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
 
     override fun runOpMode() {
@@ -99,7 +99,7 @@ class BlueClose : LinearOpMode() {
         drive.poseEstimate = blueClose
 
         while(!isStarted){
-            location = bluePropProcessor!!.location
+            location = bluePropProcessor.location
             telemetry.update()
         }
 

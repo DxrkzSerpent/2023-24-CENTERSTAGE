@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.teamcode.RoadRunner.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.lib.DepoSlides
 import org.firstinspires.ftc.teamcode.lib.Deposit
@@ -14,11 +15,14 @@ import org.firstinspires.ftc.teamcode.lib.TargetPositionGetter
 import org.firstinspires.ftc.teamcode.lib.Tilt
 import org.firstinspires.ftc.teamcode.lib.vision.PropProcessor
 import org.firstinspires.ftc.teamcode.lib.vision.RedPropProcessor
+import org.firstinspires.ftc.teamcode.lib.vision.Vision
+import org.firstinspires.ftc.vision.VisionPortal
 
 @Autonomous
 class RedClose: LinearOpMode() {
-    private var location: PropProcessor.Location = PropProcessor.Location.MIDDLE
-    private val redPropProcessor: RedPropProcessor? = null
+    var location: PropProcessor.Location = PropProcessor.Location.MIDDLE
+    var redPropProcessor: RedPropProcessor = RedPropProcessor(telemetry)
+
     val telemetryMultiple = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
 
     override fun runOpMode() {
@@ -99,20 +103,21 @@ class RedClose: LinearOpMode() {
         deposit.closeClaw()
         drive.poseEstimate = redClose
 
-        while(!isStarted){
-            location = redPropProcessor!!.location
-            telemetry.update()
+        while(!isStarted()) {
+            location = redPropProcessor.getLocation();
+            telemetry.update();
         }
+
+
         waitForStart()
         when (location) {
-            PropProcessor.Location.MIDDLE -> drive.followTrajectorySequenceAsync(closeCenter)
-            PropProcessor.Location.RIGHT -> drive.followTrajectorySequenceAsync(closeRight)
-            PropProcessor.Location.LEFT -> drive.followTrajectorySequenceAsync(closeLeft)
+            PropProcessor.Location.MIDDLE -> drive.followTrajectorySequence(closeCenter)
+            PropProcessor.Location.RIGHT -> drive.followTrajectorySequence(closeRight)
+            PropProcessor.Location.LEFT -> drive.followTrajectorySequence(closeLeft)
         }
 
         while (opModeIsActive()) {
             drive.update()
-            depoSlide.update()
         }
 
     }
