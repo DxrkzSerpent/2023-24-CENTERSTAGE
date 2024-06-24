@@ -43,12 +43,12 @@ import java.util.List;
 @Config
 public class BluePropProcessor extends PropProcessor {
 
-    public static double lowY = 0.05;
-    public static double lowCr = -0.01;
-    public static double lowCb = 0;
-    public static double highY = 0.33;
-    public static double highCr = -0.05;
-    public static double highCb = 0.11;
+    public static int lowY = 30;
+    public static int lowCr = 50;
+    public static int lowCb = 50;
+    public static int highY = 70;
+    public static int highCr = 120;
+    public static int highCb = 250;
     public Scalar lower = new Scalar(lowY,lowCr,lowCb);
     public Scalar upper = new Scalar(highY,highCr,highCb);
 
