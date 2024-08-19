@@ -20,7 +20,7 @@ class CandyShooter {
 
     fun control(gamepad: Gamepad){
         if(gamepad.a){
-            leftShooter.power = 1.0
+            leftShooter.power = -1.0
             rightShooter.power = 1.0
         } else {
             leftShooter.power = 0.0
