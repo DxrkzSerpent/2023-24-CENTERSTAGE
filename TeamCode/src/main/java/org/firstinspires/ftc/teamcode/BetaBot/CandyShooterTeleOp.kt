@@ -12,9 +12,12 @@ class CandyShooterTeleOp : LinearOpMode() {
     val candyShooter = CandyShooter()
     override fun runOpMode() {
         waitForStart()
-        mecanum.mecanumLoop(gamepad1)
-        candyShooter.control(gamepad1)
-        candyShooter.telem()
+        while(opModeIsActive()){
+            mecanum.mecanumLoop(gamepad1)
+            candyShooter.control(gamepad1)
+            candyShooter.telem()
+        }
+
 
     }
 }
